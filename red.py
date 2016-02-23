@@ -10,6 +10,7 @@ import glob
 import os
 import time
 import sys
+import logging
 
 #
 #  Red, a Discord bot by Twentysix, based on discord.py and its command extension
@@ -54,6 +55,23 @@ async def on_command(command, ctx):
 async def on_message(message):
     if user_allowed(message):
         await bot.process_commands(message)
+
+@bot.event
+async def on_command_error(error, ctx):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await send_cmd_help(ctx)
+    elif isinstance(error, commands.BadArgument):
+        await send_cmd_help(ctx)
+
+async def send_cmd_help(ctx):
+    if ctx.invoked_subcommand:
+        pages = bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        for page in pages:
+            await bot.send_message(ctx.message.channel, page)
+    else:
+        pages = bot.formatter.format_help_for(ctx, ctx.command)
+        for page in pages:
+            await bot.send_message(ctx.message.channel, page)
 
 @bot.command()
 @checks.is_owner()
@@ -139,8 +157,14 @@ async def debug(ctx, *, code : str):
             result = result.replace(w.upper(), r)
     await bot.say(result)
 
-@bot.command(pass_context=True, hidden=True)
-async def setowner(ctx):
+@bot.group(name="set", pass_context=True)
+async def _set(ctx):
+    """Changes settings"""
+    if ctx.invoked_subcommand is None:
+        await send_cmd_help(ctx)
+
+@_set.command(pass_context=True)
+async def owner(ctx):
     """Sets owner"""
     global lock
     msg = ctx.message
@@ -156,11 +180,50 @@ async def setowner(ctx):
     t = threading.Thread(target=wait_for_answer, args=(ctx.message.author,))
     t.start()
 
+@_set.command()
+@checks.is_owner()
+async def prefix(*prefixes):
+    """Sets prefixes
+
+    Must be separated by a space. Enclose in double
+    quotes if a prefix contains spaces."""
+    if prefixes == ():
+        await bot.say("Example: setprefix [ ! ^ .")
+        return
+    bot.command_prefix = list(prefixes)
+    data = load_settings()
+    data["PREFIXES"] = list(prefixes)
+    with open("data/red/settings.json", "w") as f:
+            f.write(json.dumps(data))
+    if len(prefixes) > 1:
+        await bot.say("Prefixes set")
+    else:
+        await bot.say("Prefix set")
+
+@_set.command(pass_context=True)
+@checks.is_owner()
+async def name(ctx, *name : str):
+    """Sets Red's name"""
+    if name == ():
+        await send_cmd_help(ctx)
+    await bot.edit_profile(settings["PASSWORD"], username=" ".join(name))
+    await bot.say("Done.")
+
+@_set.command(pass_context=True)
+@checks.is_owner()
+async def status(ctx, *status : str):
+    """Sets Red's status"""
+    if status != ():
+        await bot.change_status(discord.Game(name=" ".join(status)))
+    else:
+        await bot.change_status(None)
+    await bot.say("Done.")
+
 @bot.command()
 @checks.is_owner()
 async def shutdown():
     """Shuts down Red"""
-    exit(1)
+    await bot.logout()
 
 @bot.command()
 @checks.is_owner()
@@ -186,23 +249,6 @@ async def leave(ctx):
         await bot.leave_server(message.server)
     else:
         await bot.say("Ok I'll stay here then.")
-
-@bot.command()
-@checks.is_owner()
-async def setprefix(*text):
-    """Set prefixes"""
-    if text == ():
-        await bot.say("Example: setprefix [ ! ^ .")
-        return
-    bot.command_prefix = list(text)
-    data = load_settings()
-    data["PREFIXES"] = list(text)
-    with open("data/red/settings.json", "w") as f:
-            f.write(json.dumps(data))
-    if len(text) > 1:
-        await bot.say("Prefixes set")
-    else:
-        await bot.say("Prefix set")
 
 @bot.command(name="uptime")
 async def _uptime():
@@ -309,7 +355,7 @@ def check_configs():
                 settings["PREFIXES"].append(new_prefix)
 
         print("\nInput *your own* ID. You can type \@Yourname in chat to see it (copy only the numbers).")
-        print("If you want, you can also do it later with [prefix]setowner. Leave empty in that case.")
+        print("If you want, you can also do it later with [prefix]set owner. Leave empty in that case.")
         settings["OWNER"] = input("\nID> ")
         if settings["OWNER"] == "": settings["OWNER"] = "id_here"
 
@@ -332,6 +378,14 @@ def check_configs():
         print("Creating new cogs.json...")
         with open(cogs_s_path, "w") as f:
             f.write(json.dumps(cogs))
+
+def set_logger():
+    global logger
+    logger = logging.getLogger("discord")
+    logger.setLevel(logging.WARNING)
+    handler = logging.FileHandler(filename='data/red/discord.log', encoding='utf-8', mode='a')
+    handler.setFormatter(logging.Formatter('%(asctime)s %(message)s', datefmt="[%d/%m/%Y %H:%M]"))
+    logger.addHandler(handler)
 
 def get_answer():
     choices = ("yes", "y", "no", "n")
@@ -403,6 +457,7 @@ def main():
     global settings
     check_folders()
     check_configs()
+    set_logger()
     settings = load_settings()
     checks.owner = settings["OWNER"]
     load_cogs()

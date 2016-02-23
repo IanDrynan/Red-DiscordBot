@@ -133,9 +133,22 @@ class General:
         await self.bot.say("http://lmgtfy.com/?q=" + text)
 
     @commands.command(no_pm=True, hidden=True)
-    async def hug(self, user : discord.Member = None):
-        """Because everyone likes hugs"""
-        await self.bot.say("(っ´▽｀)っ" + " *" + user.name + "*")
+    async def hug(self, user : discord.Member, intensity : int=1):
+        """Because everyone likes hugs
+
+        Up to 10 intensity levels."""
+        name = " *" + user.name + "*"
+        if intensity <= 0:
+            msg = "(っ˘̩╭╮˘̩)っ" + name
+        elif intensity <= 3:
+            msg = "(っ´▽｀)っ" + name
+        elif intensity <= 6:
+            msg = "╰(*´︶`*)╯" + name
+        elif intensity <= 9:
+            msg = "(つ≧▽≦)つ" + name
+        elif intensity >= 10:
+            msg = "(づ￣ ³￣)づ" + name + " ⊂(´・ω・｀⊂)"
+        await self.bot.say(msg)
 
     @commands.command(pass_context=True, no_pm=True)
     async def info(self, ctx, user : discord.Member = None):
@@ -167,7 +180,7 @@ class General:
         data = "```\n"
         data += "Name: " + server.name + "\n"
         data += "ID: " + server.id + "\n"
-        data += "Region: " + server.region.name + "\n"
+        data += "Region: " + str(server.region) + "\n"
         data += "Users: " + online + "/" + total + "\n"
         data += "Channels: " + str(len(server.channels)) + "\n"
         data += "Roles: " + str(len(server.roles)) + "\n"
@@ -213,9 +226,9 @@ class General:
                 self.poll_sessions.append(p)
                 await p.start()
             else:
-                await self.bot.say("`poll question;option1;option2 (...)`")
+                await self.bot.say("poll question;option1;option2 (...)")
         else:
-            await self.bot.say("`A poll is already ongoing in this channel.`")
+            await self.bot.say("A poll is already ongoing in this channel.")
 
     async def endpoll(self, message):
         if self.getPollByChannel(message):
@@ -223,9 +236,9 @@ class General:
             if p.author == message.author.id: # or isMemberAdmin(message)
                 await self.getPollByChannel(message).endPoll()
             else:
-                await self.bot.say("`Only admins and the author can stop the poll.`")
+                await self.bot.say("Only admins and the author can stop the poll.")
         else:
-            await self.bot.say("`There's no poll ongoing in this channel.`")
+            await self.bot.say("There's no poll ongoing in this channel.")
 
     def getPollByChannel(self, message):
         for poll in self.poll_sessions:

@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import random
 
 class Salt:
     """Salt dispenser"""
@@ -8,7 +9,10 @@ class Salt:
         self.bot = bot
 
     async def check_salt(self, message):
-        if message.author.id != self.bot.user.id:
+        mod = self.bot.get_cog('Mod')
+
+
+        if message.author.id != self.bot.user.id and message.channel.id not in mod.ignore_list["CHANNELS"]:
             if "salt" in message.content.lower():
                 await self.bot.send_file(message.channel, "data/salt/salt.png")
             if "jennjenn" in message.content.lower() or "96130341705637888" in message.content:
