@@ -74,6 +74,7 @@ class Economy:
             await self.bot.say("You can't transfer money to yourself.")
             return
         if self.account_check(user.id):
+<<<<<<< HEAD
             if self.enough_money(author.id, sum):
                 self.withdraw_money(author.id, sum)
                 self.add_money(user.id, sum)
@@ -95,8 +96,39 @@ class Economy:
         if done:
             logger.info("{}({}) set {} credits to {} ({})".format(author.name, author.id, str(sum), user.name, user.id))
             await self.bot.say("{}'s credits have been set to {}".format(user.name, str(sum)))
+||||||| merged common ancestors
+            await self.bot.say("{} `Your balance is: {}`".format(user.mention, str(self.check_balance(user.id))))
+=======
+            if self.enough_money(author.id, sum):
+                self.withdraw_money(author.id, sum)
+                self.add_money(user.id, sum)
+                logger.info("{}({}) transferred {} credits to {}({})".format(author.name, author.id, str(sum), user.name, user.id))
+                await self.bot.say("{} credits have been transferred to {}'s account.".format(str(sum), user.name))
+            else:
+                await self.bot.say("You don't have that sum in your bank account.")
+>>>>>>> refs/remotes/Twentysix26/develop
+        else:
+<<<<<<< HEAD
+            await self.bot.say("User has no bank account.")
+||||||| merged common ancestors
+            await self.bot.say("{} `You don't have an account at the Twentysix bank. Type !register to open one.`".format(user.mention, str(self.check_balance(user.id))))
+=======
+            await self.bot.say("That user has no bank account.")
+
+    @_bank.command(name="set", pass_context=True)
+    @checks.admin_or_permissions(manage_server=True)
+    async def _set(self, ctx, user : discord.Member, sum : int):
+        """Sets money of user's bank account
+
+        Admin/owner restricted."""
+        author = ctx.message.author
+        done = self.set_money(user.id, sum)
+        if done:
+            logger.info("{}({}) set {} credits to {} ({})".format(author.name, author.id, str(sum), user.name, user.id))
+            await self.bot.say("{}'s credits have been set to {}".format(user.name, str(sum)))
         else:
             await self.bot.say("User has no bank account.")
+>>>>>>> refs/remotes/Twentysix26/develop
 
     @commands.command(pass_context=True, no_pm=True)
     async def payday(self, ctx):
@@ -152,32 +184,72 @@ class Economy:
 
         if line[0] == ":two:" and line[1] == ":two:" and line[2] == ":six:":
             bid = bid * 5000
-            await self.bot.send_message(message.channel, "{}{} `226! Your bet is multiplied * 5000! {}!` ".format(display_reels, message.author.mention, str(bid)))
+            await self.bot.send_message(message.channel, "{}{} 226! Your bet is multiplied * 5000! {}! ".format(display_reels, message.author.mention, str(bid)))
         elif line[0] == ":four_leaf_clover:" and line[1] == ":four_leaf_clover:" and line[2] == ":four_leaf_clover:":
+<<<<<<< HEAD
             bid = bid * 50
             await self.bot.send_message(message.channel, "{}{} `Three FLC! *50!` ".format(display_reels, message.author.mention))
+||||||| merged common ancestors
+            bid += 1000
+            await self.bot.send_message(message.channel, "{}{} `Three FLC! +1000!` ".format(display_reels, message.author.mention))
+=======
+            bid += 1000
+            await self.bot.send_message(message.channel, "{}{} Three FLC! +1000! ".format(display_reels, message.author.mention))
+>>>>>>> refs/remotes/Twentysix26/develop
         elif line[0] == ":cherries:" and line[1] == ":cherries:" and line[2] == ":cherries:":
+<<<<<<< HEAD
             bid = bid * 25
             await self.bot.send_message(message.channel, "{}{} `Three cherries! *25!` ".format(display_reels, message.author.mention))
+||||||| merged common ancestors
+            bid += 800
+            await self.bot.send_message(message.channel, "{}{} `Three cherries! +800!` ".format(display_reels, message.author.mention))
+=======
+            bid += 800
+            await self.bot.send_message(message.channel, "{}{} Three cherries! +800! ".format(display_reels, message.author.mention))
+>>>>>>> refs/remotes/Twentysix26/develop
         elif line[0] == line[1] == line[2]:
+<<<<<<< HEAD
             bid = bid * 10
             await self.bot.send_message(message.channel, "{}{} `Three symbols! *10!` ".format(display_reels, message.author.mention))
+||||||| merged common ancestors
+            bid += 500
+            await self.bot.send_message(message.channel, "{}{} `Three symbols! +500!` ".format(display_reels, message.author.mention))
+=======
+            bid += 500
+            await self.bot.send_message(message.channel, "{}{} Three symbols! +500! ".format(display_reels, message.author.mention))
+>>>>>>> refs/remotes/Twentysix26/develop
         elif line[0] == ":two:" and line[1] == ":six:" or line[1] == ":two:" and line[2] == ":six:":
+<<<<<<< HEAD
             bid = bid * 5
             await self.bot.send_message(message.channel, "{}{} `26! Your bet is multiplied * 5! {}!` ".format(display_reels, message.author.mention, str(bid)))
+||||||| merged common ancestors
+            bid = bid * 4
+            await self.bot.send_message(message.channel, "{}{} `26! Your bet is multiplied * 4! {}!` ".format(display_reels, message.author.mention, str(bid)))
+=======
+            bid = bid * 4
+            await self.bot.send_message(message.channel, "{}{} 26! Your bet is multiplied * 4! {}! ".format(display_reels, message.author.mention, str(bid)))
+>>>>>>> refs/remotes/Twentysix26/develop
         elif line[0] == ":cherries:" and line[1] == ":cherries:" or line[1] == ":cherries:" and line[2] == ":cherries:":
+<<<<<<< HEAD
             bid = bid * 4
             await self.bot.send_message(message.channel, "{}{} `Two cherries! Your bet is multiplied * 4! {}!` ".format(display_reels, message.author.mention, str(bid)))
+||||||| merged common ancestors
+            bid = bid * 3
+            await self.bot.send_message(message.channel, "{}{} `Two cherries! Your bet is multiplied * 3! {}!` ".format(display_reels, message.author.mention, str(bid)))
+=======
+            bid = bid * 3
+            await self.bot.send_message(message.channel, "{}{} Two cherries! Your bet is multiplied * 3! {}! ".format(display_reels, message.author.mention, str(bid)))
+>>>>>>> refs/remotes/Twentysix26/develop
         elif line[0] == line[1] or line[1] == line[2]:
             bid = bid * 2
-            await self.bot.send_message(message.channel, "{}{} `Two symbols! Your bet is multiplied * 2! {}!` ".format(display_reels, message.author.mention, str(bid)))
+            await self.bot.send_message(message.channel, "{}{} Two symbols! Your bet is multiplied * 2! {}! ".format(display_reels, message.author.mention, str(bid)))
         else:
-            await self.bot.send_message(message.channel, "{}{} `Nothing! Lost bet.` ".format(display_reels, message.author.mention))
+            await self.bot.send_message(message.channel, "{}{} Nothing! Lost bet. ".format(display_reels, message.author.mention))
             self.withdraw_money(message.author.id, bid)
-            await self.bot.send_message(message.channel, "`Credits left: {}`".format(str(self.check_balance(message.author.id))))
+            await self.bot.send_message(message.channel, "Credits left: {}".format(str(self.check_balance(message.author.id))))
             return True
         self.add_money(message.author.id, bid)
-        await self.bot.send_message(message.channel, "`Current credits: {}`".format(str(self.check_balance(message.author.id))))
+        await self.bot.send_message(message.channel, "Current credits: {}".format(str(self.check_balance(message.author.id))))
 
     @commands.group(pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_server=True)
