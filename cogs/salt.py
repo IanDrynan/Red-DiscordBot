@@ -11,7 +11,6 @@ class Salt:
     async def check_salt(self, message):
         mod = self.bot.get_cog('Mod')
 
-
         if message.author.id != self.bot.user.id and message.channel.id not in mod.ignore_list["CHANNELS"]:
             if "salt" in message.content.lower():
                 await self.bot.send_file(message.channel, "data/salt/salt.png")

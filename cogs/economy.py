@@ -44,7 +44,7 @@ class Economy:
                         self.bank[user.id] = {"name" : user.name, "balance" : 100}
                         fileIO("data/economy/bank.json", "save", self.bank)
                         await self.bot.say("{} Account opened. Current balance: {}".format(user.mention, str(self.check_balance(user.id))))
-                        else:
+                    else:
                             await self.bot.say("{} You already have an account at the Twentysix bank.".format(user.mention))
 
                             @_bank.command(pass_context=True)
@@ -56,7 +56,7 @@ class Economy:
                                     user = ctx.message.author
                                     if self.account_check(user.id):
                                         await self.bot.say("{} Your balance is: {}".format(user.mention, str(self.check_balance(user.id))))
-                                        else:
+                                    else:
                                             await self.bot.say("{} You don't have an account at the Twentysix bank. Type !register to open one.".format(user.mention, str(self.check_balance(user.id))))
                                             else:
                                                 if self.account_check(user.id):

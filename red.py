@@ -258,6 +258,14 @@ async def _uptime():
     await bot.say("`Uptime: {}`".format(up))
 
 def user_allowed(message):
+    """this shit is my addition just delete after testings~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
+    author = message.author
+    if checks.settings["OWNER"] == author.id:
+        return True
+    else:
+        return False
+
+#up to here mate
 
     author = message.author
 
